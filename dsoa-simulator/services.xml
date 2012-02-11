@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<services>
+    <service interfaceName="br.ufpe.cin.exemplos.Calculadora" pid="calc-01" address="http://192.168.1.100:8080/englishDict" >
+        <qos>
+            <attribute operation="soma" name="Availability" distribution="exponential" providedQos="99.9" simulatedQos="99.0"/>
+            <attribute operation="subtracao" name="ResponseTime" distribution="poison" providedQos="200.0" simulatedQos="210.0"/>
+        </qos>
+    </service>
+</services>

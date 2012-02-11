@@ -1,0 +1,25 @@
+Private-Package: br.ufpe.cin.dsoa.qos.simulator,\
+	br.ufpe.cin.dsoa.qos.simulator.listener,\
+	br.ufpe.cin.dsoa.qos.simulator.parser,\
+	br.ufpe.cin.dsoa.qos.simulator.interceptors
+Bundle-Activator: br.ufpe.cin.dsoa.qos.simulator.Activator
+DynamicImport-Package:*
+-runfw: org.apache.felix.framework;version='[2.0.1,2.0.1]'
+-runee: JavaSE-1.6
+-runrequire: bundle:(symbolicname=dsoa-interceptors),\
+	bundle:(symbolicname=org.apache.felix.eventadmin),\
+	bundle:(symbolicname=org.apache.felix.framework),\
+	bundle:(symbolicname=org.apache.felix.shell),\
+	bundle:(symbolicname=org.apache.felix.shell.tui),\
+	bundle:(symbolicname=osgi.cmpn),\
+	bundle:(symbolicname=calculadora),\
+	bundle:(symbolicname=dsoa-interceptors),\
+	bundle:(symbolicname=calculadora),\
+	bundle:(symbolicname=org.apache.felix.bundlerepository),\
+	bundle:(symbolicname=org.apache.felix.eventadmin),\
+	bundle:(symbolicname=org.apache.felix.framework),\
+	bundle:(symbolicname=org.apache.felix.log),\
+	bundle:(symbolicname=org.apache.felix.scr),\
+	bundle:(symbolicname=org.apache.felix.shell),\
+	bundle:(symbolicname=org.apache.felix.shell.tui),\
+	bundle:(symbolicname=osgi.cmpn)

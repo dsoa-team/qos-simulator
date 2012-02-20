@@ -8,10 +8,12 @@ import org.apache.commons.math.distribution.ExponentialDistributionImpl;
 
 import br.ufpe.cin.dsoa.qos.simulator.parser.Service;
 
-public class DsoaAvailabilityInterceptor extends DsoaInterceptor {
+public class DsoaAvailabilityInterceptor extends DsoaInterceptor implements DsoaAvailabilityInterceptorMBean {
 	public static final String NAME = "Availability";
 	private Boolean available;
 	private double timeout;
+	private double availability;
+	private long interval = 100;
 
 	private ExponentialDistributionImpl expGenMttf;
 	private ExponentialDistributionImpl expGenMttr;
@@ -19,14 +21,12 @@ public class DsoaAvailabilityInterceptor extends DsoaInterceptor {
 	public DsoaAvailabilityInterceptor(Service service, double availability,
 			double timeout) {
 
-		long interval = 100;
-		long mttf = Math.round(availability * interval);
-		long mttr = Math.round((100 - availability) * interval);
-
 		this.available = true;
 		this.timeout = timeout;
-		this.expGenMttf = new ExponentialDistributionImpl(mttf);
-		this.expGenMttr = new ExponentialDistributionImpl(mttr);
+		this.availability = availability;
+
+		this.expGenMttf = new ExponentialDistributionImpl(generateMttf());
+		this.expGenMttr = new ExponentialDistributionImpl(generateMttr());
 	}
 
 	@Override
@@ -47,6 +47,7 @@ public class DsoaAvailabilityInterceptor extends DsoaInterceptor {
 
 		long requestTime = System.currentTimeMillis();
 		try {
+			this.verifyMean();
 			this.checkAvailability(requestTime,
 					Math.round(expGenMttf.sample()),
 					Math.round(expGenMttr.sample()));
@@ -80,6 +81,61 @@ public class DsoaAvailabilityInterceptor extends DsoaInterceptor {
 		synchronized (available) {
 			this.available = b;
 		}
+	}
+
+	private long generateMttf() {
+		return Math.round(availability * interval);
+	}
+
+	private long generateMttr() {
+		return Math.round((100 - availability) * interval);
+
+	}
+
+	/**
+	 * Verifica se houve mudança via JMX e faz modificação no gerador de
+	 * variável aleatória).
+	 * 
+	 * Só é necessário verificar o mttf (mttr é complementar)
+	 * 
+	 */
+	private synchronized void verifyMean() {
+		long mttf = generateMttf();
+
+		if (mttf != expGenMttf.getMean()) {
+			expGenMttf = new ExponentialDistributionImpl(mttf);
+			expGenMttr = new ExponentialDistributionImpl(generateMttr());
+		}
+	}
+
+	@Override
+	public void setTimeout(double timeout) {
+		this.timeout = timeout;
+	}
+
+	@Override
+	public void setAvailability(double availability) {
+		this.availability = availability;
+	}
+
+	@Override
+	public void setInterval(long interval) {
+		this.interval = interval;
+	}
+
+	@Override
+	public double getTimeout() {
+		return timeout;
+	}
+
+	@Override
+	public double getAvailability() {
+		return availability;
+	}
+
+	@Override
+	public long getInterval() {
+		return interval;
 	}
 
 }

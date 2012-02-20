@@ -1,5 +1,6 @@
 package br.ufpe.cin.dsoa.qos.simulator.listener;
 
+import java.lang.management.ManagementFactory;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.net.URL;
@@ -10,6 +11,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import javax.management.InstanceAlreadyExistsException;
+import javax.management.MBeanRegistrationException;
+import javax.management.MalformedObjectNameException;
+import javax.management.NotCompliantMBeanException;
+import javax.management.ObjectName;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
@@ -135,18 +141,37 @@ public class DsoaInterfaceListener extends BundleTracker {
 				// TODO Auto-generated catch block
 				chain.add(new InvocationHandler());
 				e.printStackTrace();
-			} 
+			}
 		}
 
 		if (qosMap.get(DsoaResponseTimeInterceptor.NAME) != null) {
-			chain.add(new DsoaResponseTimeInterceptor(service, qosMap.get(
-					DsoaResponseTimeInterceptor.NAME).getSimulatedQos()));
+			QosAttribute attrs = qosMap.get(DsoaResponseTimeInterceptor.NAME);
+			DsoaInterceptor interceptor = new DsoaResponseTimeInterceptor(
+					service, attrs.getSimulatedQos());
+			chain.add(interceptor);
+			try {
+				this.registerSimulatorMbean(interceptor, 
+						new ObjectName("qos.simulator:Type=DsoaResponseTimeInterceptor,Pid="+service.getPid()));
+			} catch (MalformedObjectNameException e) {
+				e.printStackTrace();
+			} catch (NullPointerException e) {
+				e.printStackTrace();
+			}
 		}
 
 		if (qosMap.get(DsoaAvailabilityInterceptor.NAME) != null) {
 			QosAttribute attrs = qosMap.get(DsoaAvailabilityInterceptor.NAME);
-			chain.add(new DsoaAvailabilityInterceptor(service, attrs
-					.getSimulatedQos(), attrs.getTimeout()));
+			DsoaInterceptor interceptor = new DsoaAvailabilityInterceptor(
+					service, attrs.getSimulatedQos(), attrs.getTimeout());
+			chain.add(interceptor);
+			try {
+				this.registerSimulatorMbean(interceptor, 
+						new ObjectName("qos.simulator:Type=DsoaAvailabilityInterceptor,Pid="+service.getPid()));
+			} catch (MalformedObjectNameException e) {
+				e.printStackTrace();
+			} catch (NullPointerException e) {
+				e.printStackTrace();
+			}
 		}
 
 		Object proxy = Proxy.newProxyInstance(getClass().getClassLoader(),
@@ -168,6 +193,21 @@ public class DsoaInterfaceListener extends BundleTracker {
 					((ServiceRegistration) reg).unregister();
 				}
 			}
+		}
+	}
+
+	// TODO: lógica para desregistrar mbeam
+	private void registerSimulatorMbean(DsoaInterceptor interceptor,
+			ObjectName name) {
+		try {
+			ManagementFactory.getPlatformMBeanServer().registerMBean(
+					interceptor, name);
+		} catch (InstanceAlreadyExistsException e) {
+			e.printStackTrace();
+		} catch (MBeanRegistrationException e) {
+			e.printStackTrace();
+		} catch (NotCompliantMBeanException e) {
+			e.printStackTrace();
 		}
 	}
 

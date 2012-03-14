@@ -1,71 +1,94 @@
 package br.ufpe.cin.dsoa.qos.simulator.interceptors;
 
 import java.lang.reflect.Method;
+import java.security.InvalidParameterException;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.apache.commons.math.distribution.ExponentialDistributionImpl;
+import br.ufpe.cin.dsoa.qos.simulator.parser.Distribution;
+import br.ufpe.cin.dsoa.qos.simulator.parser.Interval;
+import br.ufpe.cin.dsoa.qos.simulator.parser.QosAttribute;
+import br.ufpe.cin.dsoa.qos.simulator.parser.Simulation;
+import br.ufpe.cin.dsoa.qos.simulator.responseTime.ConstantResponseTimeSimulator;
+import br.ufpe.cin.dsoa.qos.simulator.responseTime.ExponentialResponseTimeSimulator;
+import br.ufpe.cin.dsoa.qos.simulator.responseTime.ResponseTimeSimulator;
+import br.ufpe.cin.dsoa.qos.simulator.responseTime.UniformResponseTimeSimulator;
 
-import br.ufpe.cin.dsoa.qos.simulator.parser.Service;
-
-public class DsoaResponseTimeInterceptor extends DsoaInterceptor implements
-		DsoaResponseTimeInterceptorMBean {
+public class DsoaResponseTimeInterceptor extends DsoaInterceptor {
 
 	public static final String NAME = "ResponseTime";
-	private double responseTime;
 
-	private ExponentialDistributionImpl expGenRespTime;
+	private Map<Interval, ResponseTimeSimulator> simulationMap = new HashMap<Interval, ResponseTimeSimulator>();
 
 	// private Service service;
 	// private double minimum;
 	// private double maximum;
 
-	public DsoaResponseTimeInterceptor(Service service, double responseTime) {
-		this.responseTime = responseTime;
-		this.expGenRespTime = new ExponentialDistributionImpl(responseTime);
+	public DsoaResponseTimeInterceptor(QosAttribute responseTime) {
+		Simulation simulation = responseTime.getSimulation();
+		long startTime = 0;
+		ResponseTimeSimulator simulator = null;
+		int i = 1;
+		System.out.println("===============================================");
+		System.out.println("==>> Time: " + System.currentTimeMillis());
+		for (Interval interval : simulation.getIntervals()) {
+			interval.setStartTime(startTime);
+			long duration = interval.getTime();
+			startTime += duration;
+			interval.setStopTime(startTime);
+			simulator = getSimulator(interval);
+			this.simulationMap.put(interval, simulator);
+			System.out.println("Interval[" + i++ + "]: " + interval);
+		}
+		this.cycle = startTime;
 		// this.service = service;
+	}
+
+	private ResponseTimeSimulator getSimulator(Interval interval) {
+		Distribution distribution = interval.getDistribution();
+		ResponseTimeSimulator simulator = null;
+		if (distribution != null) {
+			if (ExponentialResponseTimeSimulator.NAME
+					.equalsIgnoreCase(distribution.getName())) {
+				simulator = new ExponentialResponseTimeSimulator(
+						distribution.getParameters());
+			} else if (UniformResponseTimeSimulator.NAME.equalsIgnoreCase(distribution.getName())) {
+				simulator = new UniformResponseTimeSimulator(distribution.getParameters());
+			}else {
+				throw new InvalidParameterException(
+						"Distribution not supported: " + distribution.getName());
+			}
+		} else {
+			simulator = new ConstantResponseTimeSimulator(interval.getValue());
+		}
+
+		return simulator;
 	}
 
 	@Override
 	public Object invoke(Object proxy, Method method, Object[] args)
 			throws Throwable {
 		Object retorno = null;
-		synchronized (this) {
-			try {
-				this.verifyMean();
-				long waitTime = Math.round(expGenRespTime.sample());
-				while (waitTime == 0) {
-					this.verifyMean();
-					waitTime = Math.round(expGenRespTime.sample());
-				}
-				wait(waitTime);
-				retorno = super.invoke(proxy, method, args);
-			} catch (Exception e) {
-				System.out.println("EXCE��O NO RESPONSE TIME INTERCEPTOR!!!");
-				e.printStackTrace();
+		long moment = System.currentTimeMillis();
+		if (initTime == 0) {
+			initTime = moment;
+		}
+		System.out.println("===>> Moment: " + moment + "["
+				+ (moment - initTime) % cycle + "]");
+		ResponseTimeSimulator simulator = null;
+		for (Interval interval : simulationMap.keySet()) {
+			if (interval.contains((moment - initTime) % cycle)) {
+				simulator = simulationMap.get(interval);
+				System.out.println("Interval: " + interval);
+				System.out.println("Simulator: " + simulator);
 			}
-			return retorno;
 		}
-	}
-
-	/**
-	 * Verifica se houve mudança na propriedade tempo de resposta via JMX e faz
-	 * modificação no gerador de variável aleatória)
-	 * 
-	 */
-	private synchronized void verifyMean() {
-		if (this.responseTime != this.expGenRespTime.getMean()) {
-			this.expGenRespTime = new ExponentialDistributionImpl(
-					this.responseTime);
+		long simulatedTime = Math.round(simulator.getSimulatedTime());
+		while (simulatedTime == 0) {
+			simulatedTime = Math.round(simulator.getSimulatedTime());
 		}
-	}
-
-	@Override
-	public void setResponseTime(double responseTime) {
-		this.responseTime = responseTime;
-
-	}
-
-	@Override
-	public double getResponseTime() {
-		return this.responseTime;
+		Thread.sleep(simulatedTime);
+		retorno = super.invoke(proxy, method, args);
+		return retorno;
 	}
 }

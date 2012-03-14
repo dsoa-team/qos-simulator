@@ -3,6 +3,7 @@ package br.ufpe.cin.dsoa.qos.simulator.parser;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 @XmlType(name = "QosAttributeType")
@@ -11,23 +12,22 @@ public class QosAttribute {
 
 	@XmlAttribute
 	private String name;
+
+	@XmlAttribute
+	private double value;
+
 	@XmlAttribute(required = false)
 	private String operation;
-	@XmlAttribute(required = false)
-	private String distribution;
-	@XmlAttribute
-	private double registredQos;
-	@XmlAttribute
-	private double simulatedQos;
-	@XmlAttribute(required = false)
-	private double timeout;
 
-	public double getTimeout() {
-		return timeout;
+	@XmlElement(name = "simulation")
+	private Simulation simulation;
+
+	public Simulation getSimulation() {
+		return simulation;
 	}
 
-	public void setTimeout(double timeout) {
-		this.timeout = timeout;
+	public void setSimulation(Simulation simulation) {
+		this.simulation = simulation;
 	}
 
 	public String getName() {
@@ -38,20 +38,12 @@ public class QosAttribute {
 		this.name = name;
 	}
 
-	public double getRegistredQos() {
-		return registredQos;
+	public double getValue() {
+		return value;
 	}
 
-	public void setRegistredQos(double providedQos) {
-		this.registredQos = providedQos;
-	}
-
-	public double getSimulatedQos() {
-		return simulatedQos;
-	}
-
-	public void setSimulatedQos(double simulatedQos) {
-		this.simulatedQos = simulatedQos;
+	public void setValue(double value) {
+		this.value = value;
 	}
 
 	public String getOperation() {
@@ -62,23 +54,11 @@ public class QosAttribute {
 		this.operation = operation;
 	}
 
-	public void setDistribution(String distribution) {
-		this.distribution = distribution;
-	}
-
-	public String getDistribution() {
-		return distribution;
-	}
-
 	@Override
 	public String toString() {
-		return "QosAttribute [name="
-				+ name
-				+ (operation == null ? "" : ", operation=" + operation)
-				+ (distribution == null ? "" : ", distribution=" + distribution)
-				+ (timeout <= 0 ? "" : ", timeout=" + timeout)
-				+ ", providedQos=" + registredQos + ", simulatedQos="
-				+ simulatedQos + "]";
+		return "QosAttribute [name=" + name + ", value=" + value
+				+ ", operation=" + operation + ", simulation=" + simulation
+				+ "]";
 	}
 
 }

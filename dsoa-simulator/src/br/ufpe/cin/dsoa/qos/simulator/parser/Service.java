@@ -9,19 +9,19 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlType;
 
-@XmlType(name = "ServiceType", propOrder = { "interfaceName", "className",
-		"pid", "address", "qosAttributes" })
+@XmlType(name = "ServiceType", propOrder = { "pid", "interfaceName",
+		"className", "address", "qosAttributes" })
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Service {
+
+	@XmlAttribute(required = true)
+	private String pid;
 
 	@XmlAttribute(required = true)
 	private String interfaceName;
 
 	@XmlAttribute(required = false)
 	private String className;
-
-	@XmlAttribute(required = true)
-	private String pid;
 
 	@XmlAttribute(required = false)
 	private String address;
@@ -30,12 +30,12 @@ public class Service {
 	@XmlElement(name = "attribute")
 	private List<QosAttribute> qosAttributes;
 
-	public String getClassName() {
-		return className;
+	public String getPid() {
+		return pid;
 	}
 
-	public void setClassName(String className) {
-		this.className = className;
+	public void setPid(String pid) {
+		this.pid = pid;
 	}
 
 	public String getInterfaceName() {
@@ -46,16 +46,12 @@ public class Service {
 		this.interfaceName = interfaceName;
 	}
 
-	public String getPid() {
-		return pid;
+	public String getClassName() {
+		return className;
 	}
 
-	public void setPid(String pid) {
-		this.pid = pid;
-	}
-
-	public List<QosAttribute> getQosAttributes() {
-		return qosAttributes;
+	public void setClassName(String className) {
+		this.className = className;
 	}
 
 	public String getAddress() {
@@ -66,16 +62,18 @@ public class Service {
 		this.address = address;
 	}
 
+	public List<QosAttribute> getQosAttributes() {
+		return qosAttributes;
+	}
+
 	public void setQosAttributes(List<QosAttribute> qosAttributes) {
 		this.qosAttributes = qosAttributes;
 	}
 
 	@Override
 	public String toString() {
-		return "Service [pid=" + pid
-				+ (null == address ? "" : ", address=" + address)
-				+ ", interfaceName=" + interfaceName
-				+ (null == className ? "" : ", className=" + className)
+		return "Service [interfaceName=" + interfaceName + ", className="
+				+ className + ", pid=" + pid + ", address=" + address
 				+ ", qosAttributes=" + qosAttributes + "]";
 	}
 

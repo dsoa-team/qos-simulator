@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<services>
+	
+	<service interfaceName="br.com.bb.provider.InformationProvider" pid="Provider-BBC-1" address="http://192.168.1.2:8089/informationProviderBBC">
+		<qos>
+			<attribute operation="getCotation" value="700" name="ResponseTime">
+				<simulation>
+					<interval unit="ms" time="300000" value="650">
+					</interval>
+					<interval unit="ms" time="300000" value="700">
+					</interval>
+				</simulation>
+			</attribute>
+		</qos>
+	</service>
+	
+	<service interfaceName="br.com.bb.provider.InformationProvider" pid="Provider-BBC-2" address="http://192.168.1.2:9089/informationProviderBBC">
+		<qos>
+			<attribute operation="getCotation" value="95.0" name="Availability">
+				<simulation>
+					<interval unit="ms" time="300000">
+						<distribution name="bernoulli">
+							<parameter value="100.0" name="mean" />
+						</distribution>
+					</interval>
+					<interval unit="ms" time="300000">
+						<distribution name="bernoulli">
+							<parameter value="0.0" name="mean" />
+						</distribution>
+					</interval>
+				</simulation>
+			</attribute>
+			<attribute operation="getCotation" value="600" name="ResponseTime">
+				<simulation>
+					<interval unit="ms" time="600000" value="600">
+					</interval>
+				</simulation>
+			</attribute>
+		</qos>
+	</service>	
+	
+	<service interfaceName="br.com.bb.provider.InformationProvider" pid="Provider-BBC-3" address="http://192.168.1.2:9999/informationProviderBBC">
+		<qos>
+			<attribute operation="getCotation" value="500" name="ResponseTime">
+				<simulation>
+					<interval unit="ms" time="60000" value="500">
+					</interval>
+					<interval unit="ms" time="60000" value="700">
+					</interval>
+					<interval unit="ms" time="60000" value="900">
+					</interval>
+					<interval unit="ms" time="420000" value="1100">
+					</interval>
+				</simulation>
+			</attribute>
+		</qos>
+	</service>
+	
+</services>

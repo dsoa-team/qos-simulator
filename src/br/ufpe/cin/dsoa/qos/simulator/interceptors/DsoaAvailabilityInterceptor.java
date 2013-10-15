@@ -23,14 +23,16 @@ public class DsoaAvailabilityInterceptor extends DsoaInterceptor {
 
 		Simulation simulation = availability.getSimulation();
 		long startTime = 0;
-		AvailabilitySimulator simulator = null;
-		for (Interval interval : simulation.getIntervals()) {
-			interval.setStartTime(startTime);
-			long duration = interval.getTime();
-			startTime += duration;
-			interval.setStopTime(startTime);
-			simulator = getSimulator(interval);
-			this.simulationMap.put(interval, simulator);
+		if(simulation != null){
+			AvailabilitySimulator simulator = null;
+			for (Interval interval : simulation.getIntervals()) {
+				interval.setStartTime(startTime);
+				long duration = interval.getTime();
+				startTime += duration;
+				interval.setStopTime(startTime);
+				simulator = getSimulator(interval);
+				this.simulationMap.put(interval, simulator);
+			}
 		}
 		this.cycle = startTime;
 
@@ -66,14 +68,17 @@ public class DsoaAvailabilityInterceptor extends DsoaInterceptor {
 		if (initTime == 0) {
 			initTime = moment;
 		}
-		System.out.println("===>> Moment: " + moment + "["
-				+ (moment - initTime) % cycle + "]");
+/*		System.out.println("===>> Moment: " + moment + "["
+				+ (moment - initTime) % cycle + "]");*/
 		AvailabilitySimulator simulator = null;
-		for (Interval interval : simulationMap.keySet()) {
-			if (interval.contains((moment - initTime) % cycle)) {
-				simulator = simulationMap.get(interval);
-				System.out.println("Interval: " + interval);
-				System.out.println("Simulator: " + simulator);
+		
+		if(!simulationMap.isEmpty()) {
+			for (Interval interval : simulationMap.keySet()) {
+				if (interval.contains((moment - initTime) % cycle)) {
+					simulator = simulationMap.get(interval);
+					System.out.println("Interval: " + interval);
+					System.out.println("Simulator: " + simulator);
+				}
 			}
 		}
 

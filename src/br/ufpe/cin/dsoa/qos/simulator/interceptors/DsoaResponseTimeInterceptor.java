@@ -16,7 +16,7 @@ import br.ufpe.cin.dsoa.qos.simulator.responseTime.UniformResponseTimeSimulator;
 
 public class DsoaResponseTimeInterceptor extends DsoaInterceptor {
 
-	public static final String NAME = "ResponseTime";
+	public static final String NAME = "AvgResponseTime";
 
 	private Map<Interval, ResponseTimeSimulator> simulationMap = new HashMap<Interval, ResponseTimeSimulator>();
 

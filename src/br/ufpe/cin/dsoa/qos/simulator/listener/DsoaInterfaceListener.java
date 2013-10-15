@@ -137,10 +137,12 @@ public class DsoaInterfaceListener extends BundleTracker {
 			logger.info("QoSAttribute: " + qos);
 			if (qos.getName()
 					.equalsIgnoreCase(DsoaAvailabilityInterceptor.NAME)) {
-				properties.put(qos.getName(), qos.getValue());
+				
+				String propertyName = "constraint.service.qos." + qos.getName() + ".GE";
+				properties.put(propertyName, qos.getValue());
 			} else {
-				properties.put(qos.getOperation() + "." + qos.getName(),
-						qos.getValue());
+				String proppertyName = "constraint.operation.qos." + qos.getName() + "." + qos.getOperation()+".LE";
+				properties.put(proppertyName, qos.getValue());
 			}
 		}
 		return properties;

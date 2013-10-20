@@ -104,7 +104,7 @@ public class DsoaInterfaceListener extends BundleTracker {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private ServiceRegistration createService(Bundle bundle, Service service)
 			throws ClassNotFoundException {
-		Class clazz = bundle.loadClass(service.getInterfaceName());
+		Class clazz = this.context.getBundle().loadClass(service.getInterfaceName());
 		Dictionary properties = this.buildRegistryMetadata(service);
 		DsoaInterceptorChain chain = this.buildInterceptorChain(bundle, service);
 		Object proxy = Proxy.newProxyInstance(getClass().getClassLoader(),

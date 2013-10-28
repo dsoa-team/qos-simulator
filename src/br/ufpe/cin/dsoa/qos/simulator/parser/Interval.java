@@ -25,7 +25,7 @@ public class Interval {
 	private long stopTime;
 
 	public boolean contains(long moment) {
-		if (moment > startTime && moment <= stopTime) {
+		if (moment >= startTime && moment < stopTime) {
 			return true;
 		} else {
 			return false;

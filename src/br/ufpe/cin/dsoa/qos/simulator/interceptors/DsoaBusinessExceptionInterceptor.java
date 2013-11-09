@@ -42,7 +42,7 @@ public class DsoaBusinessExceptionInterceptor extends DsoaInterceptor {
 			}
 			this.cycle = startTime;
 
-			System.out.println("Interval[" + i++ + "]: " + interval);
+			//System.out.println("Interval[" + i++ + "]: " + interval);
 
 		}
 	}
@@ -53,7 +53,7 @@ public class DsoaBusinessExceptionInterceptor extends DsoaInterceptor {
 		if (initTime == 0) {
 			initTime = moment;
 		}
-		System.out.println("===>> Moment: " + moment + "[" + (moment - initTime) % cycle + "]");
+		//System.out.println("===>> Moment: " + moment + "[" + (moment - initTime) % cycle + "]");
 
 		BusinessSimulator simulator = null;
 
@@ -61,7 +61,8 @@ public class DsoaBusinessExceptionInterceptor extends DsoaInterceptor {
 			for (Interval interval : simulationMap.keySet()) {
 				if (interval.contains((moment - initTime) % cycle)) {
 					simulator = simulationMap.get(interval);
-					System.out.println("Interval: " + interval);
+					//System.out.println("Interval: " + interval);
+					System.out.println("Simulator: " + simulator);
 				}
 			}
 		}

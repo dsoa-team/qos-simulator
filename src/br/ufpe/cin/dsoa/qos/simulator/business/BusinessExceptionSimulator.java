@@ -14,4 +14,10 @@ public class BusinessExceptionSimulator implements BusinessSimulator {
 		return this.exceptionClass;
 	}
 
+
+	@Override
+	public String toString() {
+		return "BusinessExceptionSimulator [exceptionClass=" + exceptionClass.getName()
+				+ "]";
+	}
 }

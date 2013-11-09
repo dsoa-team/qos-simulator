@@ -29,8 +29,8 @@ public class DsoaResponseTimeInterceptor extends DsoaInterceptor {
 		long startTime = 0;
 		ResponseTimeSimulator simulator = null;
 		int i = 1;
-		System.out.println("===============================================");
-		System.out.println("==>> Time: " + System.currentTimeMillis());
+		//System.out.println("===============================================");
+		//System.out.println("==>> Time: " + System.currentTimeMillis());
 		for (Interval interval : simulation.getIntervals()) {
 			interval.setStartTime(startTime);
 			long duration = interval.getTime();
@@ -38,7 +38,7 @@ public class DsoaResponseTimeInterceptor extends DsoaInterceptor {
 			interval.setStopTime(startTime);
 			simulator = getSimulator(interval);
 			this.simulationMap.put(interval, simulator);
-			System.out.println("Interval[" + i++ + "]: " + interval);
+			//System.out.println("Interval[" + i++ + "]: " + interval);
 		}
 		this.cycle = startTime;
 		// this.service = service;
@@ -73,13 +73,13 @@ public class DsoaResponseTimeInterceptor extends DsoaInterceptor {
 		if (initTime == 0) {
 			initTime = moment;
 		}
-		System.out.println("===>> Moment: " + moment + "["
-				+ (moment - initTime) % cycle + "]");
+		//System.out.println("===>> Moment: " + moment + "["
+		//		+ (moment - initTime) % cycle + "]");
 		ResponseTimeSimulator simulator = null;
 		for (Interval interval : simulationMap.keySet()) {
 			if (interval.contains((moment - initTime) % cycle)) {
 				simulator = simulationMap.get(interval);
-				System.out.println("Interval: " + interval);
+				//System.out.println("Interval: " + interval);
 				System.out.println("Simulator: " + simulator);
 			}
 		}

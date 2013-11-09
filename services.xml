@@ -11,6 +11,14 @@
 					</interval>
 				</simulation>
 			</attribute>
+			<attribute operation="getCotation" name="BusinessException">
+				<simulation>
+					<interval unit="ms" time="300000">
+					</interval>
+					<interval unit="ms" time="10000" exceptionClass="br.com.bb.exception.OutOfScheduleException">
+					</interval>
+				</simulation>
+			</attribute>
 		</qos>
 	</service>
 	

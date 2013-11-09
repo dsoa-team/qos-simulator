@@ -88,8 +88,6 @@ public class DsoaInterfaceListener extends BundleTracker {
 	@SuppressWarnings("unchecked")
 	public void unregisterServices() {
 		Bundle[] bundles = this.getBundles();
-		System.out.println(bundles);
-		System.out.println(bundles.length);
 		if (bundles != null && bundles.length > 0) {
 			for (Bundle bundle : bundles) {
 				List<ServiceRegistration> list = (List<ServiceRegistration>) this
@@ -123,6 +121,7 @@ public class DsoaInterfaceListener extends BundleTracker {
 	private Dictionary buildRegistryMetadata(Service service) {
 		Dictionary properties = new Properties();
 		properties.put("provider.pid", service.getPid());
+		properties.put("service.managed", true);
 		// adding_distributed_properties
 		// FIXME: adicionar propriedades de forma mais parametrizada no xml
 		// (services)
@@ -149,7 +148,7 @@ public class DsoaInterfaceListener extends BundleTracker {
 	}
 
 	private DsoaInterceptorChain buildInterceptorChain(Bundle bundle,
-			Service service) {
+			Service service) throws ClassNotFoundException {
 		return new DsoaInterceptorChain(bundle, service);
 	}
 }

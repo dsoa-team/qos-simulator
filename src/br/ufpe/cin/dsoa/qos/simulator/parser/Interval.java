@@ -17,6 +17,9 @@ public class Interval {
 
 	@XmlAttribute(required = false)
 	private double value;
+	
+	@XmlAttribute(required = false)
+	private String exceptionClass;
 
 	@XmlElement(name = "distribution")
 	private Distribution distribution;
@@ -54,6 +57,14 @@ public class Interval {
 
 	public void setValue(double value) {
 		this.value = value;
+	}
+
+	public String getExceptionClass() {
+		return exceptionClass;
+	}
+
+	public void setExceptionClass(String exceptionClass) {
+		this.exceptionClass = exceptionClass;
 	}
 
 	public Distribution getDistribution() {

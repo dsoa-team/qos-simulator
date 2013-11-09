@@ -1,6 +1,7 @@
 Private-Package: br.ufpe.cin.dsoa.qos.simulator.listener,\
 	br.ufpe.cin.dsoa.qos.simulator,\
 	br.ufpe.cin.dsoa.qos.simulator.availability,\
+	br.ufpe.cin.dsoa.qos.simulator.business,\
 	br.ufpe.cin.dsoa.qos.simulator.interceptors,\
 	br.ufpe.cin.dsoa.qos.simulator.parser,\
 	br.ufpe.cin.dsoa.qos.simulator.responseTime

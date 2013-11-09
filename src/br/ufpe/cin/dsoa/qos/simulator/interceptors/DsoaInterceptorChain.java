@@ -29,7 +29,7 @@ public class DsoaInterceptorChain extends DsoaInterceptor {
 		defaultValues.put(Double.class, 0d);
 	}
 
-	public DsoaInterceptorChain(Bundle bundle, Service service) {
+	public DsoaInterceptorChain(Bundle bundle, Service service) throws ClassNotFoundException {
 		super();
 		this.bundle = bundle;
 		this.addService(service);
@@ -38,11 +38,16 @@ public class DsoaInterceptorChain extends DsoaInterceptor {
 		for (QosAttribute qos : service.getQosAttributes()) {
 			qosMap.put(qos.getName().toLowerCase(), qos);
 		}
-
+			
 		QosAttribute responseTime = qosMap.get(DsoaResponseTimeInterceptor.NAME
 				.toLowerCase());
 		if (responseTime != null) {
 			this.add(new DsoaResponseTimeInterceptor(responseTime));
+		}
+		
+		QosAttribute businessException = qosMap.get(DsoaBusinessExceptionInterceptor.NAME.toLowerCase());
+		if(businessException != null) {
+			this.add(new DsoaBusinessExceptionInterceptor(businessException, bundle));
 		}
 
 		QosAttribute availability = qosMap.get(DsoaAvailabilityInterceptor.NAME
@@ -50,6 +55,7 @@ public class DsoaInterceptorChain extends DsoaInterceptor {
 		if (availability != null) {
 			this.add(new DsoaAvailabilityInterceptor(availability));
 		}
+		
 	}
 
 	public void addService(Service service) {
@@ -59,14 +65,13 @@ public class DsoaInterceptorChain extends DsoaInterceptor {
 			this.add(new InvocationHandler());
 		} else {
 			try {
-				// A classe do serviço deve sempre possuir um contrutor default
+				// A classe do serviï¿½o deve sempre possuir um contrutor default
 				Class c = bundle.loadClass(service.getClassName());
 				Object instance = c.newInstance();
 				this.add(new InvocationHandler(instance));
 			} catch (Exception e) {
 				this.add(new InvocationHandler());
-				System.out
-						.println("Problema na criação da instância da classe do serviço: ");
+				System.out.println("Problema na criaï¿½ï¿½o da instï¿½ncia da classe do serviï¿½o: ");
 				e.printStackTrace();
 				System.out.println("Criando um mock...");
 			}
@@ -85,8 +90,7 @@ public class DsoaInterceptorChain extends DsoaInterceptor {
 	}
 
 	@Override
-	public Object invoke(Object proxy, Method method, Object[] args)
-			throws Throwable {
+	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 		return currentInterceptor.invoke(proxy, method, args);
 	}
 
@@ -102,8 +106,7 @@ public class DsoaInterceptorChain extends DsoaInterceptor {
 		}
 
 		@Override
-		public Object invoke(Object proxy, Method method, Object[] args)
-				throws Throwable {
+		public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 
 			if (instance != null) {
 				return method.invoke(instance, args);

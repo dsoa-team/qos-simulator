@@ -68,16 +68,12 @@ public class DsoaAvailabilityInterceptor extends DsoaInterceptor {
 		if (initTime == 0) {
 			initTime = moment;
 		}
-/*		System.out.println("===>> Moment: " + moment + "["
-				+ (moment - initTime) % cycle + "]");*/
 		AvailabilitySimulator simulator = null;
 		
 		if(!simulationMap.isEmpty()) {
 			for (Interval interval : simulationMap.keySet()) {
 				if (interval.contains((moment - initTime) % cycle)) {
 					simulator = simulationMap.get(interval);
-					System.out.println("Interval: " + interval);
-					System.out.println("Simulator: " + simulator);
 				}
 			}
 		}

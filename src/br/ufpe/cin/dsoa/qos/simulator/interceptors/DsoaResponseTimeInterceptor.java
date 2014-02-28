@@ -28,9 +28,6 @@ public class DsoaResponseTimeInterceptor extends DsoaInterceptor {
 		Simulation simulation = responseTime.getSimulation();
 		long startTime = 0;
 		ResponseTimeSimulator simulator = null;
-		int i = 1;
-		//System.out.println("===============================================");
-		//System.out.println("==>> Time: " + System.currentTimeMillis());
 		for (Interval interval : simulation.getIntervals()) {
 			interval.setStartTime(startTime);
 			long duration = interval.getTime();
@@ -80,7 +77,6 @@ public class DsoaResponseTimeInterceptor extends DsoaInterceptor {
 			if (interval.contains((moment - initTime) % cycle)) {
 				simulator = simulationMap.get(interval);
 				//System.out.println("Interval: " + interval);
-				System.out.println("Simulator: " + simulator);
 			}
 		}
 		long simulatedTime = Math.round(simulator.getSimulatedTime());

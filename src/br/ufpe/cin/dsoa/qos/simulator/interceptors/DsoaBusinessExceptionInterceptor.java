@@ -26,7 +26,6 @@ public class DsoaBusinessExceptionInterceptor extends DsoaInterceptor {
 		Simulation simulation = businessException.getSimulation();
 		List<Interval> intervals = simulation.getIntervals();
 
-		int i = 1;
 		long startTime = 0;
 
 		for (Interval interval : intervals) {
@@ -42,8 +41,6 @@ public class DsoaBusinessExceptionInterceptor extends DsoaInterceptor {
 			}
 			this.cycle = startTime;
 
-			//System.out.println("Interval[" + i++ + "]: " + interval);
-
 		}
 	}
 
@@ -53,16 +50,12 @@ public class DsoaBusinessExceptionInterceptor extends DsoaInterceptor {
 		if (initTime == 0) {
 			initTime = moment;
 		}
-		//System.out.println("===>> Moment: " + moment + "[" + (moment - initTime) % cycle + "]");
-
 		BusinessSimulator simulator = null;
 
 		if (!simulationMap.isEmpty()) {
 			for (Interval interval : simulationMap.keySet()) {
 				if (interval.contains((moment - initTime) % cycle)) {
 					simulator = simulationMap.get(interval);
-					//System.out.println("Interval: " + interval);
-					System.out.println("Simulator: " + simulator);
 				}
 			}
 		}
@@ -70,6 +63,7 @@ public class DsoaBusinessExceptionInterceptor extends DsoaInterceptor {
 		if (simulator != null) {
 			Class<? extends Exception> exceptionClass = simulator.getSimulatedBusinessException();
 			Exception ex = exceptionClass.newInstance();
+			System.out.println(ex);
 			throw ex;
 		} else {
 			return super.invoke(proxy, method, args);

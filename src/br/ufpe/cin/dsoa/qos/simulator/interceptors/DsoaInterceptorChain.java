@@ -71,9 +71,7 @@ public class DsoaInterceptorChain extends DsoaInterceptor {
 				this.add(new InvocationHandler(instance));
 			} catch (Exception e) {
 				this.add(new InvocationHandler());
-				System.out.println("Problema na cria��o da inst�ncia da classe do servi�o: ");
 				e.printStackTrace();
-				System.out.println("Criando um mock...");
 			}
 		}
 	}

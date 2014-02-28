@@ -59,16 +59,13 @@ public class DsoaInterceptorChain extends DsoaInterceptor {
 			this.add(new InvocationHandler());
 		} else {
 			try {
-				// A classe do serviço deve sempre possuir um contrutor default
+				// A classe do serviï¿½o deve sempre possuir um contrutor default
 				Class c = bundle.loadClass(service.getClassName());
 				Object instance = c.newInstance();
 				this.add(new InvocationHandler(instance));
 			} catch (Exception e) {
 				this.add(new InvocationHandler());
-				System.out
-						.println("Problema na criação da instância da classe do serviço: ");
 				e.printStackTrace();
-				System.out.println("Criando um mock...");
 			}
 		}
 	}

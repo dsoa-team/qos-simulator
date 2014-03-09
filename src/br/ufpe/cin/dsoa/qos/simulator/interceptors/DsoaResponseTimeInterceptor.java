@@ -5,6 +5,11 @@ import java.security.InvalidParameterException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.math.random.JDKRandomGenerator;
+import org.apache.commons.math.random.RandomData;
+import org.apache.commons.math.random.RandomDataImpl;
+import org.apache.commons.math.random.RandomGenerator;
+
 import br.ufpe.cin.dsoa.qos.simulator.parser.Distribution;
 import br.ufpe.cin.dsoa.qos.simulator.parser.Interval;
 import br.ufpe.cin.dsoa.qos.simulator.parser.QosAttribute;
@@ -25,6 +30,9 @@ public class DsoaResponseTimeInterceptor extends DsoaInterceptor {
 	// private double maximum;
 
 	public DsoaResponseTimeInterceptor(QosAttribute responseTime) {
+		RandomGenerator gen = new JDKRandomGenerator();
+		gen.setSeed(1000);
+		RandomData randomData = new RandomDataImpl(gen);
 		Simulation simulation = responseTime.getSimulation();
 		long startTime = 0;
 		ResponseTimeSimulator simulator = null;
@@ -33,7 +41,7 @@ public class DsoaResponseTimeInterceptor extends DsoaInterceptor {
 			long duration = interval.getTime();
 			startTime += duration;
 			interval.setStopTime(startTime);
-			simulator = getSimulator(interval);
+			simulator = getSimulator(randomData, interval);
 			this.simulationMap.put(interval, simulator);
 			//System.out.println("Interval[" + i++ + "]: " + interval);
 		}
@@ -41,16 +49,16 @@ public class DsoaResponseTimeInterceptor extends DsoaInterceptor {
 		// this.service = service;
 	}
 
-	private ResponseTimeSimulator getSimulator(Interval interval) {
+	private ResponseTimeSimulator getSimulator(RandomData randomData, Interval interval) {
 		Distribution distribution = interval.getDistribution();
 		ResponseTimeSimulator simulator = null;
 		if (distribution != null) {
 			if (ExponentialResponseTimeSimulator.NAME
 					.equalsIgnoreCase(distribution.getName())) {
-				simulator = new ExponentialResponseTimeSimulator(
+				simulator = new ExponentialResponseTimeSimulator(randomData,
 						distribution.getParameters());
 			} else if (UniformResponseTimeSimulator.NAME.equalsIgnoreCase(distribution.getName())) {
-				simulator = new UniformResponseTimeSimulator(distribution.getParameters());
+				simulator = new UniformResponseTimeSimulator(randomData, distribution.getParameters());
 			}else {
 				throw new InvalidParameterException(
 						"Distribution not supported: " + distribution.getName());

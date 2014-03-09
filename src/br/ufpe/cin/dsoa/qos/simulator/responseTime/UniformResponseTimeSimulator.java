@@ -2,6 +2,7 @@ package br.ufpe.cin.dsoa.qos.simulator.responseTime;
 
 import java.util.List;
 
+import org.apache.commons.math.random.RandomData;
 import org.apache.commons.math.random.RandomDataImpl;
 
 import br.ufpe.cin.dsoa.qos.simulator.parser.Parameter;
@@ -12,7 +13,7 @@ public class UniformResponseTimeSimulator implements ResponseTimeSimulator {
 	private int maximum = 0;
 	private RandomDataImpl randomNumberGenerator;
 
-	public UniformResponseTimeSimulator(List<Parameter> parameters) {
+	public UniformResponseTimeSimulator(RandomData randomData, List<Parameter> parameters) {
 		for (Parameter parameter : parameters) {
 			if (parameter.getName().equalsIgnoreCase("minimum")) {
 				minimum = (int) Math.round(parameter.getValue());

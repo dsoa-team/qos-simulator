@@ -19,8 +19,8 @@ public class DsoaAvailabilityInterceptor extends DsoaInterceptor {
 	private Map<Interval, AvailabilitySimulator> simulationMap = new HashMap<Interval, AvailabilitySimulator>();
 	private double timeout;
 
-	public DsoaAvailabilityInterceptor(QosAttribute availability) {
-
+	public DsoaAvailabilityInterceptor(long initTime, QosAttribute availability) {
+		super(initTime);
 		Simulation simulation = availability.getSimulation();
 		long startTime = 0;
 		if(simulation != null){

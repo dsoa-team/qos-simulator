@@ -19,9 +19,9 @@ public class DsoaBusinessExceptionInterceptor extends DsoaInterceptor {
 
 	private Map<Interval, BusinessSimulator> simulationMap = new HashMap<Interval, BusinessSimulator>();
 
-	public DsoaBusinessExceptionInterceptor(QosAttribute businessException, Bundle bundle)
+	public DsoaBusinessExceptionInterceptor(long initTime, QosAttribute businessException, Bundle bundle)
 			throws ClassNotFoundException {
-
+		super(initTime);
 		BusinessSimulator simulator = null;
 		Simulation simulation = businessException.getSimulation();
 		List<Interval> intervals = simulation.getIntervals();

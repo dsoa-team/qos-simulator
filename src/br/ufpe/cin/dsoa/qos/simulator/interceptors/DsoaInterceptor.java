@@ -9,6 +9,10 @@ public abstract class DsoaInterceptor implements InvocationHandler {
 	protected long initTime;
 	protected long cycle;
 
+	public DsoaInterceptor(long initTime) {
+		this.initTime = initTime;
+	}
+	
 	public DsoaInterceptor getNext() {
 		return this.next;
 	}

@@ -62,10 +62,12 @@ public class DsoaInterfaceListener extends BundleTracker {
 				logger.info("===>>> Service list: " + list);
 				regs = new ArrayList<ServiceRegistration>(list.getServices()
 						.size());
+				long initTime = System.currentTimeMillis();
 				for (Service service : list.getServices()) {
 					logger.info("==>> Service: " + service);
-					regs.add(createService(bundle, service));
+					regs.add(createService(bundle, service, initTime));
 				}
+				System.out.println("==>> Simulation started at " + initTime);
 			} catch (JAXBException e) {
 				e.printStackTrace();
 			} catch (ClassNotFoundException e) {
@@ -100,11 +102,11 @@ public class DsoaInterfaceListener extends BundleTracker {
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private ServiceRegistration createService(Bundle bundle, Service service)
+	private ServiceRegistration createService(Bundle bundle, Service service, long startTime)
 			throws ClassNotFoundException {
 		Class clazz = this.context.getBundle().loadClass(service.getInterfaceName());
 		Dictionary properties = this.buildRegistryMetadata(service);
-		DsoaInterceptorChain chain = this.buildInterceptorChain(bundle, service);
+		DsoaInterceptorChain chain = this.buildInterceptorChain(bundle, service, startTime);
 		Object proxy = Proxy.newProxyInstance(getClass().getClassLoader(),
 				new Class[] { clazz }, chain);
 		return this.context.registerService(service.getInterfaceName(), proxy,
@@ -148,7 +150,7 @@ public class DsoaInterfaceListener extends BundleTracker {
 	}
 
 	private DsoaInterceptorChain buildInterceptorChain(Bundle bundle,
-			Service service) throws ClassNotFoundException {
-		return new DsoaInterceptorChain(bundle, service);
+			Service service, long startTime) throws ClassNotFoundException {
+		return new DsoaInterceptorChain(bundle, service, startTime);
 	}
 }

@@ -1,9 +1,13 @@
 package br.ufpe.cin.dsoa.qos.simulator.interceptors;
 
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.security.InvalidParameterException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.FileHandler;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 
 import org.apache.commons.math.random.JDKRandomGenerator;
 import org.apache.commons.math.random.RandomData;
@@ -25,11 +29,16 @@ public class DsoaResponseTimeInterceptor extends DsoaInterceptor {
 
 	private Map<Interval, ResponseTimeSimulator> simulationMap = new HashMap<Interval, ResponseTimeSimulator>();
 
+	private Logger logger;
+
+	private FileHandler adaptationLogFile;
+
 	// private Service service;
 	// private double minimum;
 	// private double maximum;
 
-	public DsoaResponseTimeInterceptor(QosAttribute responseTime) {
+	public DsoaResponseTimeInterceptor(long initTime, QosAttribute responseTime) {
+		super(initTime);
 		RandomGenerator gen = new JDKRandomGenerator();
 		gen.setSeed(1000);
 		RandomData randomData = new RandomDataImpl(gen);
@@ -46,6 +55,26 @@ public class DsoaResponseTimeInterceptor extends DsoaInterceptor {
 			//System.out.println("Interval[" + i++ + "]: " + interval);
 		}
 		this.cycle = startTime;
+		
+		java.util.logging.Formatter f = new java.util.logging.Formatter() {
+
+			public String format(LogRecord record) {
+				StringBuilder builder = new StringBuilder(1000);
+				builder.append(formatMessage(record));
+				builder.append("\n");
+				return builder.toString();
+			}
+		};
+		logger = Logger.getLogger("SimulatorLog");
+		try {
+			adaptationLogFile = new FileHandler("simulator.log");
+			adaptationLogFile.setFormatter(f);
+			logger.addHandler(adaptationLogFile);
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		// this.service = service;
 	}
 
@@ -77,20 +106,21 @@ public class DsoaResponseTimeInterceptor extends DsoaInterceptor {
 		long moment = System.currentTimeMillis();
 		if (initTime == 0) {
 			initTime = moment;
+			logger.info("Start time: " + initTime);
 		}
-		//System.out.println("===>> Moment: " + moment + "["
-		//		+ (moment - initTime) % cycle + "]");
+		//System.out.println("===>> Moment: " + moment + "[" + (moment - initTime) % cycle + "]");
 		ResponseTimeSimulator simulator = null;
 		for (Interval interval : simulationMap.keySet()) {
 			if (interval.contains((moment - initTime) % cycle)) {
 				simulator = simulationMap.get(interval);
-				//System.out.println("Interval: " + interval);
+				break;
 			}
 		}
 		long simulatedTime = Math.round(simulator.getSimulatedTime());
 		while (simulatedTime == 0) {
 			simulatedTime = Math.round(simulator.getSimulatedTime());
 		}
+		logger.info("Moment: " + (moment - initTime) % cycle + ", " + simulatedTime);
 		Thread.sleep(simulatedTime);
 		retorno = super.invoke(proxy, method, args);
 		return retorno;

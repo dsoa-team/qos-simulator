@@ -29,8 +29,8 @@ public class DsoaInterceptorChain extends DsoaInterceptor {
 		defaultValues.put(Double.class, 0d);
 	}
 
-	public DsoaInterceptorChain(Bundle bundle, Service service) throws ClassNotFoundException {
-		super();
+	public DsoaInterceptorChain(Bundle bundle, Service service, long initTime) throws ClassNotFoundException {
+		super(initTime);
 		this.bundle = bundle;
 		this.addService(service);
 
@@ -42,18 +42,18 @@ public class DsoaInterceptorChain extends DsoaInterceptor {
 		QosAttribute responseTime = qosMap.get(DsoaResponseTimeInterceptor.NAME
 				.toLowerCase());
 		if (responseTime != null) {
-			this.add(new DsoaResponseTimeInterceptor(responseTime));
+			this.add(new DsoaResponseTimeInterceptor(initTime, responseTime));
 		}
 		
 		QosAttribute businessException = qosMap.get(DsoaBusinessExceptionInterceptor.NAME.toLowerCase());
 		if(businessException != null) {
-			this.add(new DsoaBusinessExceptionInterceptor(businessException, bundle));
+			this.add(new DsoaBusinessExceptionInterceptor(this.initTime,businessException, bundle));
 		}
 
 		QosAttribute availability = qosMap.get(DsoaAvailabilityInterceptor.NAME
 				.toLowerCase());
 		if (availability != null) {
-			this.add(new DsoaAvailabilityInterceptor(availability));
+			this.add(new DsoaAvailabilityInterceptor(this.initTime,availability));
 		}
 		
 	}
@@ -62,15 +62,15 @@ public class DsoaInterceptorChain extends DsoaInterceptor {
 		// Se service.getClassName()==null => Deve-se criar um proxy para fazer
 		// um mock do servico.
 		if (null == service.getClassName()) {
-			this.add(new InvocationHandler());
+			this.add(new InvocationHandler(this.initTime));
 		} else {
 			try {
 				// A classe do servi�o deve sempre possuir um contrutor default
 				Class c = bundle.loadClass(service.getClassName());
 				Object instance = c.newInstance();
-				this.add(new InvocationHandler(instance));
+				this.add(new InvocationHandler(this.initTime, instance));
 			} catch (Exception e) {
-				this.add(new InvocationHandler());
+				this.add(new InvocationHandler(this.initTime));
 				e.printStackTrace();
 			}
 		}
@@ -96,10 +96,12 @@ public class DsoaInterceptorChain extends DsoaInterceptor {
 
 		private Object instance;
 
-		public InvocationHandler() {
+		public InvocationHandler(long initTime) {
+			super(initTime);
 		}
 
-		public InvocationHandler(Object instance) {
+		public InvocationHandler(long initTime, Object instance) {
+			super(initTime);
 			this.instance = instance;
 		}
 

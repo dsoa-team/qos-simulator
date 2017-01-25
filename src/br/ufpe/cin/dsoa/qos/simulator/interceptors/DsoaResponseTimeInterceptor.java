@@ -26,12 +26,32 @@ import br.ufpe.cin.dsoa.qos.simulator.responseTime.UniformResponseTimeSimulator;
 public class DsoaResponseTimeInterceptor extends DsoaInterceptor {
 
 	public static final String NAME = "AvgResponseTime";
+	
+	private static Logger logger;
+	
+	{
+		java.util.logging.Formatter f = new java.util.logging.Formatter() {
+
+			public String format(LogRecord record) {
+				StringBuilder builder = new StringBuilder(1000);
+				builder.append(formatMessage(record));
+				builder.append("\n");
+				return builder.toString();
+			}
+		};
+		logger = Logger.getLogger("SimulatorLog");
+		try {
+			FileHandler adaptationLogFile = new FileHandler("logs/ResponseTimeSimulator" + (this.getId()) +".log");
+			adaptationLogFile.setFormatter(f);
+			logger.addHandler(adaptationLogFile);
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
 	private Map<Interval, ResponseTimeSimulator> simulationMap = new HashMap<Interval, ResponseTimeSimulator>();
-
-	private Logger logger;
-
-	private FileHandler adaptationLogFile;
 
 	// private Service service;
 	// private double minimum;
@@ -55,27 +75,6 @@ public class DsoaResponseTimeInterceptor extends DsoaInterceptor {
 			//System.out.println("Interval[" + i++ + "]: " + interval);
 		}
 		this.cycle = startTime;
-		
-		java.util.logging.Formatter f = new java.util.logging.Formatter() {
-
-			public String format(LogRecord record) {
-				StringBuilder builder = new StringBuilder(1000);
-				builder.append(formatMessage(record));
-				builder.append("\n");
-				return builder.toString();
-			}
-		};
-		logger = Logger.getLogger("SimulatorLog");
-		try {
-			adaptationLogFile = new FileHandler("simulator.log");
-			adaptationLogFile.setFormatter(f);
-			logger.addHandler(adaptationLogFile);
-		} catch (SecurityException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		// this.service = service;
 	}
 
 	private ResponseTimeSimulator getSimulator(RandomData randomData, Interval interval) {

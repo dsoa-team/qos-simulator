@@ -6,7 +6,6 @@ public class ConstantResponseTimeSimulator implements ResponseTimeSimulator {
 	private static final long DEFAULT = 1000;
 
 	public ConstantResponseTimeSimulator(double d) {
-		super();
 		this.constantTime = Math.round((d == 0) ? DEFAULT : d);
 	}
 

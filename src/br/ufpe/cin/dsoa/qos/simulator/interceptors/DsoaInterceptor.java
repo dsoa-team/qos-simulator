@@ -8,9 +8,17 @@ public abstract class DsoaInterceptor implements InvocationHandler {
 	protected DsoaInterceptor next;
 	protected long initTime;
 	protected long cycle;
-
+	
+	private static int instanceCounter = 0;
+	private int id;
+	
 	public DsoaInterceptor(long initTime) {
 		this.initTime = initTime;
+		this.id = instanceCounter++;
+	}
+	
+	public int getId() {
+		return id;
 	}
 	
 	public DsoaInterceptor getNext() {

@@ -7,7 +7,7 @@ import org.apache.commons.math.random.RandomDataImpl;
 
 import br.ufpe.cin.dsoa.qos.simulator.parser.Parameter;
 
-public class UniformResponseTimeSimulator implements ResponseTimeSimulator {
+public class UniformResponseTimeSimulator implements  ResponseTimeSimulator{
 	public static final String NAME = "uniform";
 	private int minimum = 0;
 	private int maximum = 0;

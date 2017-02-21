@@ -14,7 +14,7 @@ import br.ufpe.cin.dsoa.qos.simulator.parser.QosAttribute;
 import br.ufpe.cin.dsoa.qos.simulator.parser.Simulation;
 
 public class DsoaAvailabilityInterceptor extends DsoaInterceptor {
-	public static final String NAME = "Availability";
+	public static final String NAME = "AvgAvailability";
 
 	private Map<Interval, AvailabilitySimulator> simulationMap = new HashMap<Interval, AvailabilitySimulator>();
 	private double timeout;
@@ -84,7 +84,7 @@ public class DsoaAvailabilityInterceptor extends DsoaInterceptor {
 			if (timeout > 0) {
 				Thread.sleep(Math.round(timeout));
 			}
-			throw new ConnectException("Simulated availability failure...");
+			throw new RuntimeException("Simulated availability failure...");
 		}
 	}
 

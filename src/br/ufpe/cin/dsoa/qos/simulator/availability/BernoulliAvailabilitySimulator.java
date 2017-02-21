@@ -14,6 +14,7 @@ public class BernoulliAvailabilitySimulator implements AvailabilitySimulator {
 		for (Parameter parameter : parameters) {
 			if (parameter.getName().equalsIgnoreCase("mean")) {
 				availability = parameter.getValue() / 100;
+				System.out.println("SIMULATOR (AVAILABILITY-SIMULATOR): " + this.toString() );
 				break;
 			}
 		}
@@ -22,6 +23,7 @@ public class BernoulliAvailabilitySimulator implements AvailabilitySimulator {
 	@Override
 	public boolean isAvailable() {
 		double random = Math.random();
+		System.out.println("SIMULATOR (AVAILABILITY-SIMULATOR): RANDOM " + random);
 		if (random <= availability) {
 			return true;
 		} else {

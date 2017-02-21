@@ -33,12 +33,12 @@ public class DsoaInterceptorChain extends DsoaInterceptor {
 		super(initTime);
 		this.bundle = bundle;
 		this.addService(service);
-
+/*	TODO JUST FOR EVALUATION
 		Map<String, QosAttribute> qosMap = new HashMap<String, QosAttribute>();
 		for (QosAttribute qos : service.getQosAttributes()) {
 			qosMap.put(qos.getName().toLowerCase(), qos);
 		}
-			
+		
 		QosAttribute responseTime = qosMap.get(DsoaResponseTimeInterceptor.NAME
 				.toLowerCase());
 		if (responseTime != null) {
@@ -55,7 +55,7 @@ public class DsoaInterceptorChain extends DsoaInterceptor {
 		if (availability != null) {
 			this.add(new DsoaAvailabilityInterceptor(this.initTime,availability));
 		}
-		
+	*/	
 	}
 
 	public void addService(Service service) {

@@ -1,17 +1,44 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <services>
-	
-	<service interfaceName="br.com.bb.provider.InformationProvider" pid="Provider-BBC-1" address="http://192.168.1.2:8089/informationProviderBBC">
+	<!-- 
+		Tag service's attributes: 
+			pid: service.id, 
+			interfaceName: service interface to be published, 
+			className: service classname, if null, a proxy is created, 
+			address: address where the simulation service should be available  
+			
+	-->
+	<service pid="Provider-BBC-1" interfaceName="br.com.bb.provider.InformationProvider" address="http://192.168.1.2:8089/informationProviderBBC">
+		<!-- Just a markup tag to contain attribute tags -->
 		<qos>
-			<attribute operation="getCotation" value="700" name="ResponseTime">
+			<!-- Tag attributes:
+				name: Attribute's name
+				value: published attribute value 
+				operation: target operation
+				simulation elements:
+			-->
+			<attribute name="AvgResponseTime" value="100" operation="getCotation"  >
+				<!-- 
+					Has intervals elements (no attributes). The ideia is that the time can be split into intervals, 
+					and in each the simulated behavior can be specified differently. Ex: In the following case, 
+					the simulator will always answer with the same response time (configured throgh the value attribute), 
+					that is, the response time will	have a constant value -->
 				<simulation>
-					<interval unit="ms" time="300000" value="650">
+					<!--	Attributes:
+								time: 	represents the duration of that interval in ms (that is, for how long should the described behavior be simulated)
+								value: 	used only in the case that the simulated response time shall be constant. In this case, it specifies the response time.
+										When this is not the case, we should provide parameters to guide the simulator, as explained bellow.
+								exceptionClass: used when we want to simulate the throwing of a particular business exception 
+								distribution: Used to specify other simulated behaviors.
+					 -->
+					<interval unit="ms" time="300000" value="150">
 					</interval>
-					<interval unit="ms" time="300000" value="700">
+					<interval unit="ms" time="300000" value="300">
 					</interval>
 				</simulation>
 			</attribute>
-			<attribute operation="getCotation" name="BusinessException">
+			
+			<attribute name="MinResponseTime" value="100" operation="getCotation" >
 				<simulation>
 					<interval unit="ms" time="300000">
 					</interval>
@@ -27,6 +54,14 @@
 			<attribute operation="getCotation" value="95.0" name="Availability">
 				<simulation>
 					<interval unit="ms" time="300000">
+						<!--
+							Distribution tag's attributes:
+								name: Used to specify a random behavior, guided by a distribution. Each distribution requires particular parameters.
+									AvgAvailability: In the availability case, just bernoulli is supported. It has unique parameter that is called mean.
+									AvgResponseTime: Two possibilities here:
+										1. exponential: simulates an exponential response time. Parameter: mean (value in ms)
+										2. uniform: simulates an unifor distribution. Parameters: minimum and maximum (ms)
+							 -->
 						<distribution name="bernoulli">
 							<parameter value="100.0" name="mean" />
 						</distribution>

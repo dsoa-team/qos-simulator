@@ -18,7 +18,6 @@ import org.osgi.framework.BundleEvent;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.util.tracker.BundleTracker;
 
-import br.ufpe.cin.dsoa.qos.simulator.interceptors.DsoaAvailabilityInterceptor;
 import br.ufpe.cin.dsoa.qos.simulator.interceptors.DsoaInterceptorChain;
 import br.ufpe.cin.dsoa.qos.simulator.parser.QosAttribute;
 import br.ufpe.cin.dsoa.qos.simulator.parser.Service;
@@ -101,7 +100,21 @@ public class DsoaInterfaceListener extends BundleTracker {
 		}
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	/**
+	 * Steps required to create a simulated service:
+	 * 	1. 	Load the service class (which is dynamically imported)
+	 * 	2. 	Build registration properties, including AvgAvailability and ResponseTime as described on the service.xml descriptor.
+	 * 	3. 	Build an interceptor chain that is responsible for simulating quality metrics (nowadays, two metric can be simulated
+	 * 		AvgResponseTime and AvgAvailability (they shall have this name).
+	 *  4. 	Creating and registering a Service Proxy that will forward requests through the built chain.
+	 *  
+	 * @param bundle
+	 * @param service
+	 * @param startTime
+	 * @return
+	 * @throws ClassNotFoundException
+	 */
+	@SuppressWarnings({ "rawtypes" })
 	private ServiceRegistration createService(Bundle bundle, Service service, long startTime)
 			throws ClassNotFoundException {
 		Class clazz = this.context.getBundle().loadClass(service.getInterfaceName());
@@ -136,15 +149,20 @@ public class DsoaInterfaceListener extends BundleTracker {
 		logger.info("Registering service: " + service);
 		for (QosAttribute qos : service.getQosAttributes()) {
 			logger.info("QoSAttribute: " + qos);
-			if (qos.getName()
-					.equalsIgnoreCase(DsoaAvailabilityInterceptor.NAME)) {
-				
-				String propertyName = "constraint.service.qos." + qos.getName() + ".GE";
-				properties.put(propertyName, qos.getValue());
+			StringBuffer propertyNameBuf = new StringBuffer("constraint");
+			
+			String operation = qos.getOperation();
+			if (operation != null) {
+				propertyNameBuf.append(".").append("operation").append("."); 
 			} else {
-				String proppertyName = "constraint.operation.qos." + qos.getName() + "." + qos.getOperation()+".LE";
-				properties.put(proppertyName, qos.getValue());
+				propertyNameBuf.append(".").append("service").append("."); 
 			}
+			propertyNameBuf.append(qos.getName());
+			if (operation != null) {
+				propertyNameBuf.append(".").append(operation).append(".");
+			}
+			propertyNameBuf.append(qos.getExpression());
+			properties.put(propertyNameBuf.toString(), qos.getValue());
 		}
 		return properties;
 	}

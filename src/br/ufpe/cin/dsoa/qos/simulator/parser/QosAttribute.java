@@ -19,6 +19,17 @@ public class QosAttribute {
 	@XmlAttribute(required = false)
 	private String operation;
 
+	@XmlAttribute(required = false)
+	private String expression;
+	
+	public String getExpression() {
+		return expression;
+	}
+
+	public void setExpression(String expression) {
+		this.expression = expression;
+	}
+
 	@XmlElement(name = "simulation")
 	private Simulation simulation;
 
